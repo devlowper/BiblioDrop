@@ -12,6 +12,10 @@ import UserDashboard from './pages/UserDashboard';
 import LibrarianDashboard from './pages/LibrarianDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AuthorDetails from './pages/AuthorDetails';
+import BlogDetails from './pages/BlogDetails';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import TrackOrder from './pages/TrackOrder';
 import NotFound from './pages/NotFound';
 import { Toaster } from 'react-hot-toast';
 
@@ -25,8 +29,13 @@ function App() {
           <Route path="/browse" element={<Browse />} />
           <Route path="/books/:id" element={<BookDetails />} />
           <Route path="/authors/:authorName" element={<AuthorDetails />} />
+          <Route path="/blog/:id" element={<BlogDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/track/:orderId" element={<TrackOrder />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard/user" element={<UserDashboard />} />
@@ -50,4 +59,12 @@ function App() {
           color: '#1f1416',
           border: '1px solid rgba(255, 123, 107, 0.35)',
           borderRadius: '4px',
-          fon
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: '12px',
+        }
+      }} />
+    </div>
+  );
+}
+
+export default App;

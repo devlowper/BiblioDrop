@@ -14,6 +14,7 @@ import {
   User,
 } from 'lucide-react';
 import { getCatalogBooks } from '../lib/externalBooks';
+import SoftBookCard from '../components/ui/SoftBookCard';
 
 const trustItems = [
   { icon: Truck, title: 'Return & Refund', sub: 'Money back guarantee' },
@@ -31,11 +32,11 @@ const categoryBanners = [
       'https://images.unsplash.com/photo-1476275466078-4007374efbbe?q=80&w=900&auto=format&fit=crop',
   },
   {
-    title: 'Crime Fiction Books',
-    desc: 'Twists, clues, and page-turners for late-night reads.',
+    title: 'Romantic Novels',
+    desc: 'Passionate tales and unforgettable characters await you.',
     overlay: 'from-brand/90 via-brand/75 to-brand/55',
     image:
-      'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=900&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=900&auto=format&fit=crop',
   },
   {
     title: 'Romantic Novels',
@@ -46,40 +47,7 @@ const categoryBanners = [
   },
 ];
 
-const blogPosts = [
-  {
-    title: 'How to build a reading habit that lasts',
-    date: 'Feb 10, 2024',
-    author: 'Admin',
-    tag: 'Activities',
-    image:
-      'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    title: 'Best mystery picks for rainy weekends',
-    date: 'Feb 12, 2024',
-    author: 'Admin',
-    tag: 'Activities',
-    image:
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    title: 'Why local book delivery is booming',
-    date: 'Feb 14, 2024',
-    author: 'Admin',
-    tag: 'Activities',
-    image:
-      'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    title: 'Authors we love this season',
-    date: 'Feb 18, 2024',
-    author: 'Admin',
-    tag: 'Activities',
-    image:
-      'https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=800&auto=format&fit=crop',
-  },
-];
+import { blogPosts } from '../data/blogPosts';
 
 const featuredAuthors = [
   { id: 1, name: 'Olivia Wilson', image: '/girl 1.jpg', books: 12, rating: '4.8', reviews: '1.2k', genre: 'Romance' },
@@ -103,8 +71,8 @@ const ExploreMore = () => (
 );
 
 const AuthorCard = ({ author }) => (
-  <Link to="/browse" className="group block bg-brand-ink rounded-2xl p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-brand/10">
-    <div className="relative mx-auto mb-4 h-28 w-28 overflow-hidden rounded-full border-4 border-white shadow-sm">
+  <Link to={`/authors/${encodeURIComponent(author.name)}`} className="group block bg-brand-ink rounded-2xl p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-brand/10">
+    <div className="relative mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-4 border-white shadow-sm">
       <img
         src={author.image}
         alt={author.name}
@@ -126,54 +94,6 @@ const AuthorCard = ({ author }) => (
   </Link>
 );
 
-const SoftBookCard = ({ book, badge, rating = '4.5', reviews = '25' }) => {
-  const price = book.deliveryFee || 0;
-  const oldPrice = price * 1.3;
-
-  return (
-    <Link to={`/books/${book._id}`} className="group block text-left">
-      <div className="relative mb-4 aspect-square rounded-2xl bg-brand-ink p-5 flex items-center justify-center overflow-hidden">
-        {badge && (
-          <span
-            className={`absolute top-3 left-3 z-10 rounded-md px-2.5 py-1 text-xs font-semibold text-white ${
-              badge === 'Hot' ? 'bg-black' : 'bg-brand'
-            }`}
-          >
-            {badge}
-          </span>
-        )}
-        <img
-          src={book.coverImage || '/default-book.png'}
-          alt={book.title}
-          className="max-h-full max-w-[70%] object-contain drop-shadow-lg transition-transform duration-500 group-hover:scale-105"
-        />
-      </div>
-      <p className="text-xs text-gray-400 mb-1">{book.category || 'Design Low Book'}</p>
-      <h3 className="font-semibold text-black text-[15px] leading-snug line-clamp-2 mb-2 group-hover:text-brand transition-colors">
-        {book.title}
-      </h3>
-      <div className="flex items-baseline gap-2 mb-3">
-        <span className="font-bold text-black">${price.toFixed(2)}</span>
-        <span className="text-sm text-brand line-through">${oldPrice.toFixed(2)}</span>
-      </div>
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="h-7 w-7 shrink-0 rounded-full bg-brand/20 overflow-hidden flex items-center justify-center">
-            <User className="w-3.5 h-3.5 text-brand" />
-          </span>
-          <span className="text-xs text-gray-500 truncate">{book.author || 'Author'}</span>
-        </div>
-        <div className="flex items-center gap-1 shrink-0 text-xs text-gray-500">
-          <Star className="w-3.5 h-3.5 fill-brand text-brand" />
-          <span>
-            {rating} <span className="text-gray-400">({reviews})</span>
-          </span>
-        </div>
-      </div>
-    </Link>
-  );
-};
-
 const Home = () => {
   const { data: books, isLoading } = useQuery({
     queryKey: ['featuredBooks'],
@@ -184,9 +104,43 @@ const Home = () => {
   });
 
   const authorBooks = books?.slice(0, 4) || [];
-  const categoryBooks = books?.slice(0, 5) || [];
+  const categoryBooks = books?.slice(0, 10) || [];
+  const readitBooks = books?.slice(6, 10) || [];
 
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const dynamicAuthors = React.useMemo(() => {
+    if (!books) return featuredAuthors;
+
+    const uniqueAuthorsMap = new Map();
+    books.forEach(book => {
+      if (book.author && book.author !== 'Unknown Author' && !uniqueAuthorsMap.has(book.author)) {
+        uniqueAuthorsMap.set(book.author, {
+          name: book.author,
+          books: Math.floor(Math.random() * 20) + 5,
+          rating: (4.0 + Math.random()).toFixed(1),
+          reviews: `${(Math.random() * 3 + 0.1).toFixed(1)}k`,
+          genre: book.category || 'Fiction'
+        });
+      }
+    });
+
+    const apiAuthors = Array.from(uniqueAuthorsMap.values());
+
+    return featuredAuthors.map((fa, index) => {
+      if (apiAuthors[index]) {
+        return {
+          ...fa,
+          name: apiAuthors[index].name,
+          books: apiAuthors[index].books,
+          rating: apiAuthors[index].rating,
+          reviews: apiAuthors[index].reviews,
+          genre: apiAuthors[index].genre
+        };
+      }
+      return fa;
+    });
+  }, [books]);
 
   return (
     <div className="flex flex-col bg-white text-black font-sans relative">
@@ -199,36 +153,22 @@ const Home = () => {
               'radial-gradient(ellipse 60% 50% at 15% 40%, rgba(255,123,107,0.12), transparent), radial-gradient(ellipse 40% 40% at 80% 20%, rgba(255,255,255,0.8), transparent)',
           }}
         />
-        <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 pt-16 pb-20 md:pt-20 md:pb-24 grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-          <div className="order-2 lg:order-1 max-w-xl">
-            <p className="text-brand font-semibold text-sm md:text-base mb-4">
+        <div className="relative max-w-[1300px] mx-auto px-4 md:px-6 pt-6 pb-20 md:pt-8 md:pb-24 grid lg:grid-cols-[38%_62%] gap-8 lg:gap-4 items-center">
+          <div className="order-2 lg:order-1 max-w-xl text-center lg:text-left mx-auto lg:mx-0">
+            <p className="inline-block text-brand font-semibold text-sm md:text-base mb-5 border border-brand/30 bg-brand/5 px-4 py-1.5 rounded-full">
               50% Off On New Books
             </p>
             <h1 className="font-display font-extrabold text-4xl sm:text-5xl md:text-[3.4rem] leading-[1.1] tracking-tight text-[#1a1f36] mb-5">
               Get Your New Book{' '}
-              <span className="relative inline-block text-brand">
+              <span className="relative text-brand">
                 The Best Price
-                <svg
-                  className="absolute left-0 -bottom-1 w-full h-3 text-brand"
-                  viewBox="0 0 200 12"
-                  fill="none"
-                  preserveAspectRatio="none"
-                  aria-hidden
-                >
-                  <path
-                    d="M2 8C40 2 80 2 120 6C150 9 180 4 198 7"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                  />
-                </svg>
               </span>
             </h1>
             <p className="text-gray-500 text-base md:text-lg leading-relaxed mb-8 max-w-md">
               Discover bestsellers and hidden gems from local librarians — delivered fast,
               priced fair, ready for your shelf.
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-3">
               <Link to="/browse">
                 <button
                   type="button"
@@ -248,37 +188,29 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="order-1 lg:order-2 relative flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[480px] aspect-square">
-              <div className="absolute inset-[6%] rounded-full border-[10px] border-[#2a3148]/90 overflow-hidden bg-brand">
-                <div
-                  className="absolute inset-0 opacity-30 bg-cover bg-center"
-                  style={{
-                    backgroundImage:
-                      "url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=800&auto=format&fit=crop')",
-                  }}
-                />
-                <div className="absolute inset-0 bg-brand/55" />
-              </div>
+          <div className="order-1 lg:order-2 relative flex justify-center lg:justify-start items-center mt-16 lg:mt-0">
+            <div className="relative w-[110%] md:w-[90%] lg:w-[110%] max-w-[850px] flex items-center justify-center lg:-ml-4">
+              {/* Pink Circle Behind */}
+              <div className="absolute top-1/2 left-[48%] -translate-x-1/2 -translate-y-[45%] w-[60%] md:w-[50%] lg:w-[55%] aspect-square rounded-full bg-[#fde1df] z-0" />
+
+              {/* Hero Composite Image */}
               <img
-                src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=900&auto=format&fit=crop"
-                alt="Happy reader with a new book"
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[92%] w-auto max-w-none object-cover object-top drop-shadow-2xl"
+                src="/landing right 1.png"
+                alt="Online Book Delivery Hero"
+                className="relative z-10 w-full h-auto object-contain drop-shadow-2xl scale-110 md:scale-110 lg:scale-100 origin-center"
               />
-              <div className="absolute top-8 right-4 w-14 h-16 bg-white rounded shadow-lg rotate-12 opacity-90 hidden sm:block" />
-              <div className="absolute top-16 right-16 w-12 h-14 bg-white rounded shadow-md -rotate-6 opacity-80 hidden sm:block" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Trust bar */}
-      <section className="px-4 md:px-6 -mt-8 relative z-10">
-        <div className="max-w-[1280px] mx-auto rounded-2xl bg-brand-ink px-5 py-6 md:px-10 md:py-7 shadow-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+      <section className="px-4 md:px-6 -mt-8 relative z-10  ">
+        <div className="max-w-[1280px] mx-auto rounded-2xl bg-brand-ink px-5 py-6 md:px-10 md:py-7 border-4 border-white">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 ">
             {trustItems.map(({ icon: Icon, title, sub }) => (
               <div key={title} className="flex items-center gap-4">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand text-white">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand text-white shadow-sm">
                   <Icon className="w-5 h-5" strokeWidth={1.75} />
                 </span>
                 <div>
@@ -287,44 +219,6 @@ const Home = () => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Discover author books */}
-      <section className="py-16 md:py-20 px-4 md:px-6">
-        <div className="max-w-[1280px] mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-            <div>
-              <h2 className="font-display font-bold text-3xl md:text-4xl text-[#1a1f36]">
-                Discover Your Favorite Authors
-              </h2>
-              <span className="mt-3 block h-2 w-2 rounded-full bg-brand" />
-            </div>
-            <ExploreMore />
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 md:gap-6">
-            {featuredAuthors.map((author) => (
-              <AuthorCard key={author.id} author={author} />
-            ))}
-
-            <div className="col-span-2 md:col-span-3 lg:col-span-1 relative min-h-[220px] md:min-h-0 rounded-2xl overflow-hidden bg-brand flex flex-col items-center justify-center p-6 text-center group cursor-pointer shadow-md shadow-brand/20">
-              <div
-                className="absolute inset-0 opacity-25 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                style={{
-                  backgroundImage:
-                    "url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=800&auto=format&fit=crop')",
-                }}
-              />
-              <div className="relative z-10 flex flex-col items-center mt-4">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-brand shadow-sm mb-4 group-hover:scale-110 transition-transform">
-                  <User className="w-5 h-5" />
-                </span>
-                <h3 className="font-display font-bold text-xl text-white mb-2">Become an Author</h3>
-                <p className="text-sm text-white/90">Join our community and publish today.</p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -344,20 +238,168 @@ const Home = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 md:gap-6">
             {isLoading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="aspect-square rounded-2xl bg-brand-ink animate-pulse" />
-                ))
+              ? Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="aspect-square rounded-2xl bg-brand-ink animate-pulse" />
+              ))
               : categoryBooks.map((book, idx) => (
-                  <SoftBookCard
-                    key={book._id}
-                    book={book}
-                    badge={idx === 0 ? 'Hot' : idx === 2 ? '-30%' : idx === 4 ? '-12%' : null}
-                    rating={(3.4 + (idx % 4) * 0.2).toFixed(1)}
-                  />
-                ))}
+                <SoftBookCard
+                  key={book._id}
+                  book={book}
+                  badge={idx === 0 ? 'Hot' : idx === 2 ? '-30%' : idx === 4 ? '-12%' : null}
+                  rating={(3.4 + (idx % 4) * 0.2).toFixed(1)}
+                />
+              ))}
           </div>
           <div className="flex justify-center mt-8">
             <span className="h-2 w-2 rounded-full bg-brand" />
+          </div>
+        </div>
+      </section>
+
+      {/* Readit Top Books */}
+      <section className="py-8 md:py-12 px-4 md:px-6 bg-white">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+            <div>
+              <h2 className="font-display font-bold text-3xl md:text-4xl text-[#1a1f36]">
+                Readit Top Books
+              </h2>
+            </div>
+            <ExploreMore />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 md:gap-6">
+            {isLoading
+              ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="aspect-square rounded-2xl bg-brand-ink animate-pulse" />
+              ))
+              : readitBooks.map((book, idx) => (
+                <SoftBookCard
+                  key={book._id}
+                  book={book}
+                  badge={idx === 0 || idx === 3 ? 'Hot' : idx === 2 ? '-30%' : null}
+                  rating={(3.4 + (idx % 4) * 0.2).toFixed(1)}
+                />
+              ))}
+
+            {/* Promo Banner */}
+            <div className="col-span-2 md:col-span-3 lg:col-span-1 bg-[#ff7b6b] rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden group shadow-md shadow-brand/20 min-h-[380px]">
+              <div className="relative z-10 text-white">
+                <h3 className="font-display font-bold text-3xl mb-4 leading-tight">Find Your<br />Nest Books!</h3>
+                <p className="text-sm font-medium mb-8 text-white/90">And Get Your 25% Discount<br />Now!</p>
+                <Link to="/browse" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#1a1f36] shadow-sm hover:scale-105 transition-transform">
+                  Shop Now <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              <div className="absolute -bottom-6 -right-6 w-[120%] h-[60%] flex justify-end items-end pointer-events-none">
+                <div className="absolute bg-[#ffb703] rounded-full w-40 h-40 -bottom-10 left-0 z-0 opacity-80"></div>
+                <img src="/girl 6.jpg" alt="Promo" className="relative z-10 w-[80%] h-full object-cover object-top rounded-tl-[60px] shadow-lg" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Discount Banner */}
+      <section className="py-10 md:py-16 px-4 md:px-6">
+        <div className="max-w-[1280px] mx-auto relative rounded-[2rem] overflow-hidden bg-brand flex flex-col items-center justify-center text-center py-20 md:py-28 px-6 shadow-xl shadow-brand/20">
+          {/* Background Image Overlay */}
+          <div
+            className="absolute inset-0 opacity-25 mix-blend-multiply bg-cover bg-center pointer-events-none"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop')",
+            }}
+          />
+          {/* Subtle gradient overlay to smooth background */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-brand/40 via-transparent to-brand/10 pointer-events-none" />
+
+          {/* Top Left Book Decoration */}
+          <div className="absolute -top-16 -left-12 md:-top-24 md:-left-10 w-[240px] md:w-[320px] aspect-[4/3] rotate-[-25deg] shadow-2xl rounded-r-xl overflow-hidden hidden sm:block pointer-events-none z-0 border-l-[24px] border-[#061710] bg-[#0c2e20]">
+            <div className="w-full h-full border border-[#144732] flex items-center justify-center relative">
+               <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop" alt="Book mockup" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity" />
+               <span className="relative z-10 text-white/50 text-xs tracking-[0.3em] rotate-90">MOCKUP</span>
+            </div>
+          </div>
+
+          {/* Bottom Right Book Decoration */}
+          <div className="absolute -bottom-16 -right-16 md:-bottom-24 md:-right-12 w-[180px] md:w-[260px] aspect-[4/5] rotate-[20deg] shadow-2xl rounded-l-xl overflow-hidden hidden sm:block pointer-events-none z-0 border-r-[20px] border-[#d4d4d4] bg-[#f0f0f0]">
+             <div className="w-full h-full p-6 flex flex-col items-center justify-start border border-gray-300 pt-10">
+               <span className="text-gray-700 font-bold tracking-[0.2em] text-[10px] md:text-xs mb-4 text-center">BOOK<br/>MOCK-UP</span>
+               <div className="w-[70%] aspect-[3/4] bg-gray-800 rounded-sm mb-2 shadow-inner overflow-hidden">
+                 <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=300&auto=format&fit=crop" alt="model" className="w-full h-full object-cover grayscale opacity-80" />
+               </div>
+             </div>
+          </div>
+
+          {/* Center Content */}
+          <div className="relative z-10 max-w-2xl flex flex-col items-center">
+            <div className="mb-4 inline-flex flex-col items-center">
+              <span className="text-xl md:text-2xl font-semibold text-white tracking-wide">
+                Get 25%
+              </span>
+              <svg className="w-20 h-4 text-white/90 mt-0.5" viewBox="0 0 100 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 10C25 3 75 1 95 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
+            
+            <h2 className="font-display font-bold text-4xl md:text-5xl lg:text-[52px] text-white leading-[1.15] mb-2 tracking-tight">
+              Discount In All
+            </h2>
+            <h2 className="font-display font-bold text-4xl md:text-5xl lg:text-[52px] text-white leading-[1.15] mb-10 tracking-tight">
+              Kind Of Super Selling
+            </h2>
+            
+            <Link to="/browse">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-[15px] font-bold text-[#1a1f36] shadow-lg shadow-brand/40 hover:scale-105 hover:bg-gray-50 transition-transform duration-300"
+              >
+                Shop Now <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Discover author books */}
+      <section className="py-16 md:py-20 px-4 md:px-6">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+            <div>
+              <h2 className="font-display font-bold text-3xl md:text-4xl text-[#1a1f36]">
+                Discover Your Favorite Authors
+              </h2>
+              <span className="mt-3 block h-2 w-2 rounded-full bg-brand" />
+            </div>
+            <ExploreMore />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 md:gap-6">
+            {isLoading
+              ? Array.from({ length: 9 }).map((_, i) => (
+                <div key={i} className="aspect-square rounded-2xl bg-brand-ink animate-pulse" />
+              ))
+              : dynamicAuthors.map((author) => (
+                <AuthorCard key={author.id} author={author} />
+              ))}
+
+            <div className="col-span-2 md:col-span-3 lg:col-span-1 relative min-h-[220px] md:min-h-0 rounded-2xl overflow-hidden bg-brand flex flex-col items-center justify-center p-6 text-center group cursor-pointer shadow-md shadow-brand/20">
+              <div
+                className="absolute inset-0 opacity-25 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                style={{
+                  backgroundImage:
+                    "url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=800&auto=format&fit=crop')",
+                }}
+              />
+              <div className="relative z-10 flex flex-col items-center mt-4">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-brand shadow-sm mb-4 group-hover:scale-110 transition-transform">
+                  <User className="w-5 h-5" />
+                </span>
+                <h3 className="font-display font-bold text-xl text-white mb-2">Become an Author</h3>
+                <p className="text-sm text-white/90">Join our community and publish today.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -416,9 +458,10 @@ const Home = () => {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {blogPosts.map((post) => (
-              <article
-                key={post.title}
-                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              <Link
+                key={post.id}
+                to={`/blog/${post.id}`}
+                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow block"
               >
                 <div className="relative aspect-[16/11] overflow-hidden">
                   <img
@@ -442,14 +485,11 @@ const Home = () => {
                   <h3 className="font-semibold text-[#1a1f36] text-[15px] leading-snug mb-4 line-clamp-2 group-hover:text-brand transition-colors">
                     {post.title}
                   </h3>
-                  <Link
-                    to="/browse"
-                    className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand transition-colors"
-                  >
+                  <span className="inline-flex items-center gap-1.5 text-sm text-gray-500 group-hover:text-brand transition-colors">
                     Read More <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  </span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>

@@ -18,6 +18,7 @@ const Browse = () => {
 
   const page = parseInt(searchParams.get('page') || '1', 10);
   const category = searchParams.get('category') || '';
+  const sort = searchParams.get('sort') || 'most-popular';
 
   const { data, isLoading } = useQuery({
     queryKey: ['books', { page, category, search: searchParams.get('search') }],
@@ -108,6 +109,19 @@ const Browse = () => {
                   <option value="Romance">Romance</option>
                 </select>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                <select
+                  className={selectClass}
+                  value={sort}
+                  onChange={(e) => handleFilterChange('sort', e.target.value)}
+                >
+                  <option value="most-popular">Most Popular</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                </select>
+              </div>
             </div>
 
             <div className="mt-8 pt-6 border-t border-brand/15">
@@ -142,29 +156,38 @@ const Browse = () => {
           ) : (
             <>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {data?.data?.map((book) => (
-                  <Link to={`/books/${book._id}`} key={book._id} className="group flex flex-col h-full">
-                    <Card className="h-full group-hover:border-brand/40 transition-colors relative">
-                      <div className="aspect-[3/4] bg-brand-ink overflow-hidden flex items-center justify-center p-4">
-                        <img
-                          src={book.coverImage}
-                          alt={book.title}
-                          className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                      <div className="p-4 flex flex-col flex-grow">
-                        <p className="text-xs text-brand mb-1">{book.category}</p>
-                        <h3 className="text-base font-bold text-black line-clamp-1 mb-1">{book.title}</h3>
-                        <p className="text-sm text-gray-500 line-clamp-1 mb-3">{book.author}</p>
-                        <div className="mt-auto pt-3 border-t border-brand/10">
-                          <p className="text-sm font-medium text-gray-700">
-                            ${(book.deliveryFee || 0).toFixed(2)} Delivery
-                          </p>
+                {(() => {
+                  let displayBooks = [...(data?.data || [])];
+                  if (sort === 'price-low') {
+                    displayBooks.sort((a, b) => (a.deliveryFee || 0) - (b.deliveryFee || 0));
+                  } else if (sort === 'price-high') {
+                    displayBooks.sort((a, b) => (b.deliveryFee || 0) - (a.deliveryFee || 0));
+                  }
+                  
+                  return displayBooks.map((book) => (
+                    <Link to={`/books/${book._id}`} key={book._id} className="group flex flex-col h-full">
+                      <Card className="h-full group-hover:border-brand/40 transition-colors relative">
+                        <div className="aspect-[3/4] bg-brand-ink overflow-hidden flex items-center justify-center p-4">
+                          <img
+                            src={book.coverImage}
+                            alt={book.title}
+                            className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500"
+                          />
                         </div>
-                      </div>
-                    </Card>
-                  </Link>
-                ))}
+                        <div className="p-4 flex flex-col flex-grow">
+                          <p className="text-xs text-brand mb-1">{book.category}</p>
+                          <h3 className="text-base font-bold text-black line-clamp-1 mb-1">{book.title}</h3>
+                          <p className="text-sm text-gray-500 line-clamp-1 mb-3">{book.author}</p>
+                          <div className="mt-auto pt-3 border-t border-brand/10">
+                            <p className="text-sm font-medium text-gray-700">
+                              ${(book.deliveryFee || 0).toFixed(2)} Delivery
+                            </p>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  ));
+                })()}
               </div>
 
               {data?.pagination?.pages > 1 && (

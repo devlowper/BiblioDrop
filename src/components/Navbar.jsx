@@ -1,12 +1,16 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, BookOpen } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { Menu, X, BookOpen, ShoppingCart } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { getCartCount } = useCart();
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+
+  const cartCount = getCartCount();
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -58,6 +62,16 @@ const Navbar = () => {
           </nav>
 
           <div className="flex items-center gap-3 md:gap-4">
+            
+            <Link to="/cart" className="relative p-2 text-gray-600 hover:text-brand transition-colors">
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-0 w-4 h-4 bg-brand text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+
             <div className="hidden sm:flex items-center gap-3 text-sm font-medium">
               {user ? (
                 <>
