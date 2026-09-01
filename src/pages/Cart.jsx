@@ -1,15 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, Tag } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+
+  const handleApplyCoupon = () => {
+    if (couponCode.toUpperCase() === 'DISCOUNT10') {
+      setDiscount(10);
+      toast.success('Coupon applied: $10 off!');
+    } else {
+      toast.error('Invalid coupon code');
+      setDiscount(0);
+    }
+  };
 
   const subtotal = getCartTotal();
-  const tax = subtotal * 0.05; // 5% tax
-  const total = subtotal + tax;
+  const deliveryFee = cartItems.length > 0 ? cartItems.reduce((acc, item) => acc + ((item.deliveryFee || 16) * item.quantity), 0) : 0;
+  const serviceCharge = subtotal > 0 ? (subtotal + deliveryFee) * 0.05 : 0; // 5% service charge
+  const total = Math.max(0, subtotal + deliveryFee + serviceCharge - discount);
 
   if (cartItems.length === 0) {
     return (
@@ -126,12 +142,38 @@ const Cart = () => {
                   <span className="font-semibold text-gray-900">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Estimated Tax (5%)</span>
-                  <span className="font-semibold text-gray-900">${tax.toFixed(2)}</span>
+                  <span>Delivery Fee</span>
+                  <span className="font-semibold text-gray-900">${deliveryFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Shipping</span>
-                  <span className="font-semibold text-green-600">Free</span>
+                  <span>Service Charge (5%)</span>
+                  <span className="font-semibold text-gray-900">${serviceCharge.toFixed(2)}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-[#32CD32]">
+                    <span>Discount</span>
+                    <span className="font-semibold">-${discount.toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Coupon Code */}
+              <div className="mb-6 pb-6 border-b border-gray-100">
+                <p className="text-sm text-gray-500 mb-2 font-medium">Coupon Code</p>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Tag className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input 
+                      type="text" 
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      placeholder="e.g. DISCOUNT10" 
+                      className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+                    />
+                  </div>
+                  <button onClick={handleApplyCoupon} className="px-4 bg-[#1a1f36] text-white text-sm font-semibold rounded-lg hover:bg-black transition-colors">
+                    Apply
+                  </button>
                 </div>
               </div>
               
@@ -141,7 +183,14 @@ const Cart = () => {
               </div>
               
               <button 
-                onClick={() => navigate('/checkout')}
+                onClick={() => {
+                  if (!user) {
+                    toast.error('Please login to proceed to checkout');
+                    navigate('/login');
+                    return;
+                  }
+                  navigate('/checkout', { state: { amount: total, discount } })
+                }}
                 className="w-full bg-brand text-white py-4 rounded-xl font-bold shadow-md shadow-brand/20 hover:bg-brand-deep transition-colors flex items-center justify-center gap-2"
               >
                 Proceed to Checkout <ArrowRight className="w-4 h-4" />

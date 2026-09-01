@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { signUp } from '../lib/auth-client';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
-import api from '../lib/api';
 import toast from 'react-hot-toast';
 
 const fieldClass =
@@ -56,20 +56,22 @@ const Register = () => {
         photoURL = await uploadToImgbb(photo);
       }
 
-      const res = await api.post('/auth/register', {
-        name: formData.name,
+      const { data, error } = await signUp.email({
         email: formData.email,
         password: formData.password,
+        name: formData.name,
+        image: photoURL,
         role: formData.role,
-        photoURL
       });
-      const newUser = res.data.user;
 
-      login(newUser);
-      toast.success('Registration successful');
-      navigate('/');
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to register');
+      if (error) {
+        toast.error(error.message || 'Failed to register');
+      } else {
+        toast.success('Registration successful');
+        // Redirection handled by AuthContext effect or manual redirect
+      }
+    } catch (err) {
+      toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
     }

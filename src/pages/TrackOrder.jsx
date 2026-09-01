@@ -1,19 +1,51 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Truck, Package, Clock, ArrowLeft, MapPin } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import api from '../lib/api';
+import { CheckCircle, Truck, Package, Clock, ArrowLeft, MapPin, Loader2 } from 'lucide-react';
 
 const TrackOrder = () => {
   const { orderId } = useParams();
 
-  // Simulated order data
-  const orderDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const deliveryDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  const { data: delivery, isLoading, error } = useQuery({
+    queryKey: ['delivery', orderId],
+    queryFn: async () => {
+      const res = await api.get(`/deliveries/${orderId}`);
+      return res.data.data;
+    },
+    enabled: !!orderId,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="bg-[#fcfaf9] min-h-[85vh] flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-brand" />
+      </div>
+    );
+  }
+
+  if (error || !delivery) {
+    return (
+      <div className="bg-[#fcfaf9] min-h-[85vh] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Order Not Found</h2>
+          <Link to="/" className="text-brand hover:underline">Go Home</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const orderDate = new Date(delivery.requestDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const deliveryDate = new Date(new Date(delivery.requestDate).getTime() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+  const isDispatched = delivery.status === 'dispatched' || delivery.status === 'delivered';
+  const isDelivered = delivery.status === 'delivered';
 
   const steps = [
     { title: 'Order Placed', description: orderDate, icon: Package, completed: true, current: false },
-    { title: 'Processing', description: 'We are preparing your items', icon: Clock, completed: true, current: true },
-    { title: 'Shipped', description: 'Handed over to delivery partner', icon: Truck, completed: false, current: false },
-    { title: 'Delivered', description: `Estimated by ${deliveryDate}`, icon: CheckCircle, completed: false, current: false }
+    { title: 'Processing', description: 'We are preparing your items', icon: Clock, completed: true, current: delivery.status === 'pending' },
+    { title: 'Shipped', description: 'Handed over to delivery partner', icon: Truck, completed: isDispatched, current: delivery.status === 'dispatched' },
+    { title: 'Delivered', description: isDelivered ? 'Package delivered' : `Estimated by ${deliveryDate}`, icon: CheckCircle, completed: isDelivered, current: isDelivered }
   ];
 
   return (

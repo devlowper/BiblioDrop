@@ -20,24 +20,22 @@ const Navbar = () => {
 
   const getDashboardLink = () => {
     if (!user) return '/login';
-    if (user.role === 'admin') return '/dashboard/admin';
+    if (user.role === 'admin') return '/admin';
     if (user.role === 'librarian') return '/dashboard/librarian';
     return '/dashboard/user';
   };
 
   const navLinkClass = ({ isActive }) =>
-    `px-3 py-2 text-sm font-medium transition-colors ${
-      isActive ? 'text-brand' : 'text-gray-600 hover:text-black'
+    `px-3 py-2 text-sm font-medium transition-colors ${isActive ? 'text-brand' : 'text-gray-600 hover:text-black'
     }`;
 
   return (
     <header className="w-full sticky top-0 z-50">
       <div
-        className={`border-b transition-all duration-300 ${
-          scrolled
+        className={`border-b transition-all duration-300 ${scrolled
             ? 'bg-white/95 border-brand/15 backdrop-blur-xl shadow-sm'
             : 'bg-white/90 border-transparent backdrop-blur-md'
-        }`}
+          }`}
       >
         <div className="max-w-[1280px] mx-auto flex justify-between items-center px-4 md:px-6 h-16">
           <Link to="/" className="flex items-center gap-2.5 shrink-0">
@@ -56,13 +54,17 @@ const Navbar = () => {
             <NavLink to="/browse" className={navLinkClass}>
               Catalog
             </NavLink>
-            <Link to="/browse" className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-black transition-colors">
-              Sales
-            </Link>
+
+            <NavLink to="/blogs" className={navLinkClass}>
+              Blogs
+            </NavLink>
+            <NavLink to="/contact" className={navLinkClass}>
+              Contact
+            </NavLink>
           </nav>
 
           <div className="flex items-center gap-3 md:gap-4">
-            
+
             <Link to="/cart" className="relative p-2 text-gray-600 hover:text-brand transition-colors">
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
@@ -114,6 +116,12 @@ const Navbar = () => {
             </Link>
             <Link to="/browse" className="py-3 text-sm font-medium text-gray-700 hover:text-brand" onClick={() => setIsOpen(false)}>
               Catalog
+            </Link>
+            <Link to="/blogs" className="py-3 text-sm font-medium text-gray-700 hover:text-brand" onClick={() => setIsOpen(false)}>
+              Blogs
+            </Link>
+            <Link to="/contact" className="py-3 text-sm font-medium text-gray-700 hover:text-brand" onClick={() => setIsOpen(false)}>
+              Contact
             </Link>
             {!user ? (
               <>

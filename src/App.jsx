@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -13,44 +14,53 @@ import LibrarianDashboard from './pages/LibrarianDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AuthorDetails from './pages/AuthorDetails';
 import BlogDetails from './pages/BlogDetails';
+import Blogs from './pages/Blogs';
+import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import TrackOrder from './pages/TrackOrder';
 import NotFound from './pages/NotFound';
 import { Toaster } from 'react-hot-toast';
+import PageTransition from './components/PageTransition';
 
 function App() {
+  const location = useLocation();
+
   return (
     <div className="flex flex-col min-h-screen bg-brand-void text-black font-sans selection:bg-brand selection:text-white">
       <Navbar />
       <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/browse" element={<Browse />} />
-          <Route path="/books/:id" element={<BookDetails />} />
-          <Route path="/authors/:authorName" element={<AuthorDetails />} />
-          <Route path="/blog/:id" element={<BlogDetails />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/track/:orderId" element={<TrackOrder />} />
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+            <Route path="/browse" element={<PageTransition><Browse /></PageTransition>} />
+            <Route path="/books/:id" element={<PageTransition><BookDetails /></PageTransition>} />
+            <Route path="/authors/:authorName" element={<PageTransition><AuthorDetails /></PageTransition>} />
+            <Route path="/blog/:id" element={<PageTransition><BlogDetails /></PageTransition>} />
+            <Route path="/blogs" element={<PageTransition><Blogs /></PageTransition>} />
+            <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+            <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+            <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
 
-          <Route element={<PrivateRoute />}>
-            <Route path="/dashboard/user" element={<UserDashboard />} />
-          </Route>
-          
-          <Route element={<PrivateRoute allowedRoles={['librarian', 'admin']} />}>
-            <Route path="/dashboard/librarian" element={<LibrarianDashboard />} />
-          </Route>
+            <Route path="/cart" element={<PageTransition><Cart /></PageTransition>} />
+            <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
+            <Route path="/track/:orderId" element={<PageTransition><TrackOrder /></PageTransition>} />
 
-          <Route element={<PrivateRoute allowedRoles={['admin']} />}>
-            <Route path="/dashboard/admin" element={<AdminDashboard />} />
-          </Route>
+            <Route element={<PrivateRoute />}>
+              <Route path="/dashboard/user" element={<PageTransition><UserDashboard /></PageTransition>} />
+            </Route>
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            <Route element={<PrivateRoute allowedRoles={['librarian', 'admin']} />}>
+              <Route path="/dashboard/librarian" element={<PageTransition><LibrarianDashboard /></PageTransition>} />
+            </Route>
+
+            <Route element={<PrivateRoute allowedRoles={['admin']} />}>
+              <Route path="/admin" element={<PageTransition><AdminDashboard /></PageTransition>} />
+            </Route>
+
+            <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+          </Routes>
+        </AnimatePresence>
       </main>
       <Footer />
       <Toaster position="bottom-right" toastOptions={{

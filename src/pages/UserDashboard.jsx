@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../lib/api';
 import Card from '../components/ui/Card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Book, Truck, DollarSign, Loader2 } from 'lucide-react';
+import { Book, Truck, DollarSign, Loader2, Package, Clock, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const UserDashboard = () => {
@@ -38,6 +38,54 @@ const UserDashboard = () => {
     { name: 'Books Read', value: stats.totalBooksRead },
     { name: 'Pending', value: stats.pendingDeliveries },
   ];
+
+  const activeDelivery = deliveries?.find(del => del.status !== 'delivered') || deliveries?.[0];
+
+  const renderTimeline = (delivery) => {
+    const isDispatched = delivery.status === 'dispatched' || delivery.status === 'delivered';
+    const isDelivered = delivery.status === 'delivered';
+    const progressWidth = isDelivered ? '100%' : isDispatched ? '66%' : '33%';
+
+    const steps = [
+      { label: 'Placed', icon: Package, completed: true },
+      { label: 'Processing', icon: Clock, completed: true },
+      { label: 'Shipped', icon: Truck, completed: isDispatched },
+      { label: 'Delivered', icon: CheckCircle, completed: isDelivered },
+    ];
+
+    return (
+      <Card className="p-6 mb-10 overflow-hidden">
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="font-mono font-bold text-sm uppercase tracking-wide text-gray-600">Live Order Tracking</h3>
+          <Link to={`/track/${delivery._id}`} className="text-brand text-sm font-bold hover:underline">View Details →</Link>
+        </div>
+        
+        <div className="relative flex justify-between items-center px-2 sm:px-8 mb-6 w-full max-w-3xl mx-auto">
+          <div className="absolute left-6 right-6 sm:left-12 sm:right-12 top-5 h-1 bg-gray-100 z-0 rounded-full">
+            <div className="h-full bg-brand transition-all duration-700 ease-out rounded-full" style={{ width: progressWidth }}></div>
+          </div>
+          
+          {steps.map((step, idx) => {
+            const Icon = step.icon;
+            return (
+              <div key={idx} className="relative z-10 flex flex-col items-center gap-2 w-16 sm:w-24">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 border-white transition-colors duration-500 ${
+                  step.completed ? 'bg-brand text-white shadow-md shadow-brand/30' : 'bg-gray-100 text-gray-400'
+                }`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                <span className={`text-[9px] sm:text-xs font-bold uppercase tracking-wider text-center ${step.completed ? 'text-black' : 'text-gray-400'}`}>{step.label}</span>
+              </div>
+            );
+          })}
+        </div>
+        <div className="text-center">
+          <p className="font-bold text-black text-lg">{delivery.bookTitle}</p>
+          <p className="text-sm text-gray-500 font-medium mt-1">Ordered on {new Date(delivery.requestDate).toLocaleDateString()}</p>
+        </div>
+      </Card>
+    );
+  };
 
   return (
     <div className="flex flex-col md:flex-row min-h-[calc(100vh-64px-300px)]">
@@ -95,6 +143,8 @@ const UserDashboard = () => {
           </Card>
         </div>
 
+        {activeDelivery && renderTimeline(activeDelivery)}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <Card className="col-span-1 lg:col-span-1 p-6 flex flex-col justify-center">
             <h3 className="font-mono font-bold text-sm uppercase tracking-wide text-gray-600 mb-6">Activity Summary</h3>
@@ -122,12 +172,13 @@ const UserDashboard = () => {
                     <th className="pb-3 font-medium text-gray-400">Date</th>
                     <th className="pb-3 font-medium text-gray-400">Fee</th>
                     <th className="pb-3 font-medium text-gray-400">Status</th>
+                    <th className="pb-3 font-medium text-gray-400 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-brand/10">
                   {deliveries?.length === 0 && (
                     <tr>
-                      <td colSpan="4" className="py-8 text-center text-gray-400">No delivery history found.</td>
+                      <td colSpan="5" className="py-8 text-center text-gray-400">No delivery history found.</td>
                     </tr>
                   )}
                   {deliveries?.map(del => (
@@ -143,6 +194,11 @@ const UserDashboard = () => {
                         }`}>
                           {del.status}
                         </span>
+                      </td>
+                      <td className="py-4 text-right">
+                        <Link to={`/track/${del._id}`} className="text-brand text-xs font-bold hover:underline">
+                          Track Order
+                        </Link>
                       </td>
                     </tr>
                   ))}

@@ -9,7 +9,11 @@ const SoftBookCard = ({ book, badge, rating = '4.5', reviews = '25' }) => {
   return (
     <Link to={`/books/${book._id}`} className="group block text-left">
       <div className="relative mb-4 aspect-square rounded-2xl bg-brand-ink p-5 flex items-center justify-center overflow-hidden">
-        {badge && (
+        {book.availability === 'checked_out' ? (
+          <span className="absolute top-3 left-3 z-10 rounded-md px-2.5 py-1 text-xs font-semibold text-white bg-red-500">
+            Unavailable
+          </span>
+        ) : badge && (
           <span
             className={`absolute top-3 left-3 z-10 rounded-md px-2.5 py-1 text-xs font-semibold text-white ${badge === 'Hot' ? 'bg-black' : 'bg-brand'
               }`}

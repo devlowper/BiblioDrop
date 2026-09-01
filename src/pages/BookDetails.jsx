@@ -179,11 +179,12 @@ const BookDetails = () => {
               <button 
                 onClick={() => {
                   addToCart(book, quantity);
-                  toast.success('Added to cart!');
+                  toast.success("Added to cart!");
+                  navigate('/cart');
                 }}
                 className="h-[52px] px-10 rounded-full bg-[#ff7b6b] text-white font-bold text-[15px] hover:bg-[#e85a4a] shadow-lg shadow-brand/20 transition-all tracking-wide"
               >
-                Add To Cart
+                Buy Now
               </button>
 
               <button className="h-[52px] w-[52px] rounded-full border-2 border-gray-100 flex items-center justify-center text-[#ff7b6b] hover:bg-[#ff7b6b] hover:text-white hover:border-[#ff7b6b] transition-all bg-white shadow-sm">
@@ -199,7 +200,7 @@ const BookDetails = () => {
           {isOwner && (
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl mb-10">
               <p className="text-sm font-medium text-black">You are the owner of this book.</p>
-              <Link to={user.role === 'admin' ? '/dashboard/admin' : '/dashboard/librarian'}>
+              <Link to={user.role === 'admin' ? '/admin' : '/dashboard/librarian'}>
                 <Button variant="outline" className="mt-4 text-sm">Go to Dashboard</Button>
               </Link>
             </div>

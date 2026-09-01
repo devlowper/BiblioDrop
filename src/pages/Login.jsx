@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { signIn } from '../lib/auth-client';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
-import api from '../lib/api';
 import toast from 'react-hot-toast';
 
 const fieldClass =
@@ -18,7 +18,7 @@ const Login = () => {
 
   React.useEffect(() => {
     if (user) {
-      navigate(user.role === 'admin' ? '/dashboard/admin' : user.role === 'librarian' ? '/dashboard/librarian' : '/dashboard/user');
+      navigate(user.role === 'admin' ? '/admin' : user.role === 'librarian' ? '/dashboard/librarian' : '/dashboard/user');
     }
   }, [user, navigate]);
 
@@ -26,18 +26,31 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const { data, error } = await signIn.email({
+        email,
+        password,
+      });
       
-      login(res.data.user);
-      toast.success('Logged in successfully');
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to login');
+      if (error) {
+        toast.error(error.message || 'Failed to login');
+      } else {
+        toast.success('Logged in successfully');
+        // Redirection will be handled by useEffect looking at user session,
+        // or we can manually redirect here.
+        // Wait for next cycle
+      }
+    } catch (err) {
+      toast.error('An unexpected error occurred');
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
-    toast('Google login not configured in this demo', { icon: 'ℹ️' });
+  const handleGoogleLogin = async () => {
+    await signIn.social({
+      provider: 'google',
+      callbackURL: '/',
+    });
   };
 
   return (

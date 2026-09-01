@@ -231,7 +231,6 @@ const Home = () => {
               <h2 className="font-display font-bold text-3xl md:text-4xl text-[#1a1f36]">
                 Top Category Books
               </h2>
-              <span className="mt-3 block h-2 w-2 rounded-full bg-brand" />
             </div>
             <ExploreMore />
           </div>
@@ -317,19 +316,19 @@ const Home = () => {
           {/* Top Left Book Decoration */}
           <div className="absolute -top-16 -left-12 md:-top-24 md:-left-10 w-[240px] md:w-[320px] aspect-[4/3] rotate-[-25deg] shadow-2xl rounded-r-xl overflow-hidden hidden sm:block pointer-events-none z-0 border-l-[24px] border-[#061710] bg-[#0c2e20]">
             <div className="w-full h-full border border-[#144732] flex items-center justify-center relative">
-               <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop" alt="Book mockup" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity" />
-               <span className="relative z-10 text-white/50 text-xs tracking-[0.3em] rotate-90">MOCKUP</span>
+              <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop" alt="Book mockup" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity" />
+              <span className="relative z-10 text-white/50 text-xs tracking-[0.3em] rotate-90">MOCKUP</span>
             </div>
           </div>
 
           {/* Bottom Right Book Decoration */}
           <div className="absolute -bottom-16 -right-16 md:-bottom-24 md:-right-12 w-[180px] md:w-[260px] aspect-[4/5] rotate-[20deg] shadow-2xl rounded-l-xl overflow-hidden hidden sm:block pointer-events-none z-0 border-r-[20px] border-[#d4d4d4] bg-[#f0f0f0]">
-             <div className="w-full h-full p-6 flex flex-col items-center justify-start border border-gray-300 pt-10">
-               <span className="text-gray-700 font-bold tracking-[0.2em] text-[10px] md:text-xs mb-4 text-center">BOOK<br/>MOCK-UP</span>
-               <div className="w-[70%] aspect-[3/4] bg-gray-800 rounded-sm mb-2 shadow-inner overflow-hidden">
-                 <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=300&auto=format&fit=crop" alt="model" className="w-full h-full object-cover grayscale opacity-80" />
-               </div>
-             </div>
+            <div className="w-full h-full p-6 flex flex-col items-center justify-start border border-gray-300 pt-10">
+              <span className="text-gray-700 font-bold tracking-[0.2em] text-[10px] md:text-xs mb-4 text-center">BOOK<br />MOCK-UP</span>
+              <div className="w-[70%] aspect-[3/4] bg-gray-800 rounded-sm mb-2 shadow-inner overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=300&auto=format&fit=crop" alt="model" className="w-full h-full object-cover grayscale opacity-80" />
+              </div>
+            </div>
           </div>
 
           {/* Center Content */}
@@ -342,14 +341,14 @@ const Home = () => {
                 <path d="M5 10C25 3 75 1 95 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
             </div>
-            
+
             <h2 className="font-display font-bold text-4xl md:text-5xl lg:text-[52px] text-white leading-[1.15] mb-2 tracking-tight">
               Discount In All
             </h2>
             <h2 className="font-display font-bold text-4xl md:text-5xl lg:text-[52px] text-white leading-[1.15] mb-10 tracking-tight">
               Kind Of Super Selling
             </h2>
-            
+
             <Link to="/browse">
               <button
                 type="button"
@@ -370,7 +369,6 @@ const Home = () => {
               <h2 className="font-display font-bold text-3xl md:text-4xl text-[#1a1f36]">
                 Discover Your Favorite Authors
               </h2>
-              <span className="mt-3 block h-2 w-2 rounded-full bg-brand" />
             </div>
             <ExploreMore />
           </div>
