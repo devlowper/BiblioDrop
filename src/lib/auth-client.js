@@ -4,6 +4,9 @@ const apiBase = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').re
 
 export const authClient = createAuthClient({
   baseURL: apiBase.endsWith('/auth') ? apiBase : `${apiBase}/auth`,
+  fetchOptions: {
+    credentials: 'include',
+  },
 });
 
 export const { signIn, signUp, signOut, useSession } = authClient;

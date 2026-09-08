@@ -22,6 +22,14 @@ const Login = () => {
     }
   }, [user, navigate]);
 
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const err = params.get('error') || params.get('error_description');
+    if (err) {
+      toast.error(`Login error: ${decodeURIComponent(err)}`);
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
