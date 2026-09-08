@@ -62,13 +62,16 @@ const Register = () => {
         name: formData.name,
         image: photoURL,
         role: formData.role,
+        callbackURL: `${window.location.origin}/`,
       });
 
       if (error) {
         toast.error(error.message || 'Failed to register');
       } else {
         toast.success('Registration successful');
-        // Redirection handled by AuthContext effect or manual redirect
+        const role = formData.role;
+        const target = role === 'admin' ? '/admin' : role === 'librarian' ? '/dashboard/librarian' : '/dashboard/user';
+        navigate(target);
       }
     } catch (err) {
       toast.error('An unexpected error occurred');

@@ -29,15 +29,18 @@ const Login = () => {
       const { data, error } = await signIn.email({
         email,
         password,
+        callbackURL: `${window.location.origin}/`,
       });
       
       if (error) {
         toast.error(error.message || 'Failed to login');
       } else {
         toast.success('Logged in successfully');
-        // Redirection will be handled by useEffect looking at user session,
-        // or we can manually redirect here.
-        // Wait for next cycle
+        if (data?.user) {
+          const role = data.user.role;
+          const target = role === 'admin' ? '/admin' : role === 'librarian' ? '/dashboard/librarian' : '/dashboard/user';
+          navigate(target);
+        }
       }
     } catch (err) {
       toast.error('An unexpected error occurred');
@@ -47,9 +50,11 @@ const Login = () => {
   };
 
   const handleGoogleLogin = async () => {
+    // Must be full frontend URL — relative "/" redirects to the API host after Google OAuth
     await signIn.social({
       provider: 'google',
-      callbackURL: '/',
+      callbackURL: `${window.location.origin}/`,
+      errorCallbackURL: `${window.location.origin}/login`,
     });
   };
 
